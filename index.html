@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para ti, Pia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-image: url('background.png'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-color: #fcf4f4; 
+            font-family: 'Poppins', sans-serif; 
+            color: #333;
+            overflow-x: hidden; 
+        }
+
+        /* --- SCROLL PROGRESS BAR --- */
+        #scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: #ff9a9e;
+            z-index: 10000;
+            box-shadow: 0 0 10px #ff9a9e;
+        }
+
+        /* --- 1. CINEMATIC SPLASH SCREEN --- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            cursor: pointer;
+            transition: opacity 1s ease, visibility 1s ease;
+        }
+
+        #splash-screen h2 {
+            color: white;
+            margin-top: 20px;
+            font-weight: 400;
+            font-size: 1.5rem;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+            animation: pulseText 2s infinite;
+        }
+
+        #splash-screen h3 {
+            color: white;
+            margin-top: 15px;
+            font-weight: 600;
+            font-size: 2rem;
+            letter-spacing: 2px;
+        }
+
+        .envelope {
+            font-size: 5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseText {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* --- 2. AMBIENT BACKGROUND PARTICLES --- */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; 
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            bottom: -50px;
+            color: rgba(255, 154, 158, 0.5);
+            animation: driftUp linear forwards;
+        }
+
+        @keyframes driftUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- HEADER & TIMELINE --- */
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, rgba(255, 154, 158, 0.75) 0%, rgba(254, 207, 239, 0.75) 100%);
+            color: white;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px); 
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        header h1 { font-size: 2.8rem; font-weight: 600; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+        header p { font-size: 1.1rem; font-weight: 300; }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.3); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.3); }
+            60% { transform: scale(1); }
+            100% { transform: scale(1); }
+        }
+        .heart { display: inline-block; animation: heartbeat 5s infinite; }
+
+        .timeline {
+            position: relative;
+            max-width: 900px;
+            margin: 60px auto;
+            padding: 20px;
+        }
+
+        .timeline::after {
+            content: ''; position: absolute; width: 4px; background-color: rgba(255, 154, 158, 0.7);
+            top: 0; bottom: 0; left: 50%; margin-left: -2px; border-radius: 5px;
+            box-shadow: 0 0 10px rgba(255, 154, 158, 0.5);
+        }
+
+        .container {
+            padding: 10px 40px; position: relative; width: 50%;
+            opacity: 0; transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .container.show { opacity: 1; transform: translateY(0); }
+
+        .container::after {
+            content: ''; position: absolute; width: 20px; height: 20px; right: -10px;
+            background-color: white; border: 4px solid #ff9a9e; top: 15px; border-radius: 50%; z-index: 1;
+            box-shadow: 0 0 8px rgba(255, 154, 158, 0.6);
+        }
+
+        .left { left: 0; }
+        .right { left: 50%; }
+        .left::after { right: -10px; }
+        .right::after { left: -10px; }
+
+        /* --- 3. FROSTED GLASS EFFECT (Main Cards) --- */
+        .content {
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.55); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            position: relative;
+            border-radius: 15px; 
+            box-shadow: 0 8px 32px rgba(255, 154, 158, 0.2); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.6); 
+        }
+
+        .container.show .content:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(255, 154, 158, 0.3);
+        }
+
+        .content h2 { color: #e47a80; font-size: 1.6rem; font-weight: 600; margin-bottom: 5px; }
+        .content p { line-height: 1.6; color: #444; font-weight: 500; }
+
+        .content .img-wrapper { overflow: hidden; border-radius: 8px; margin-top: 15px; }
+        .content img { width: 100%; display: block; transition: transform 0.5s ease; }
+        .content:hover img { transform: scale(1.05); }
+
+        /* --- 4. VINTAGE POLAROID EFFECT (Picture-Only Cards) --- */
+        .content.picture-only {
+            padding: 12px 12px 50px 12px; 
+            background: #ffffff; 
+            border-radius: 2px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border: none;
+        }
+
+        .content.picture-only .img-wrapper { margin-top: 0; border-radius: 0; }
+        
+        .content.picture-only img { 
+            filter: sepia(30%) contrast(1.1) brightness(0.95); 
+        }
+
+        .container:nth-child(odd) .content.picture-only { transform: rotate(-3deg); }
+        .container:nth-child(even) .content.picture-only { transform: rotate(3deg); }
+        
+        .container.show .content.picture-only:hover { 
+            transform: scale(1.08) rotate(0deg); 
+            z-index: 10; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+        }
+
+        @media screen and (max-width: 600px) {
+            .timeline::after { left: 31px; }
+            .container { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .container::after { left: 21px; }
+            .right { left: 0%; }
+            header h1 { font-size: 2rem; }
+        }
+
+        /* --- MIDDLE LETTER FORMATTING --- */
+        .sub-header {
+            text-align: center;
+            padding: 40px 30px;
+            margin: 40px auto 20px auto;
+            background: linear-gradient(135deg, rgba(255, 154, 158, 0.75) 0%, rgba(254, 207, 239, 0.75) 100%);
+            color: white;
+            border-radius: 15px;
+            max-width: 800px;
+            box-shadow: 0 8px 32px rgba(255, 154, 158, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .sub-header.letter {
+            text-align: left;
+        }
+
+        .sub-header.letter p {
+            font-size: 1.1rem;
+            font-weight: 400;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .sub-header.letter p:last-child {
+            margin-bottom: 0;
+            text-align: center;
+            font-style: italic;
+            font-weight: 600;
+            margin-top: 25px;
+        }
+
+        .sub-header h2 { font-size: 1.6rem; font-weight: 600; line-height: 1.5; text-shadow: 1px 1px 3px rgba(0,0,0,0.1); }
+
+        .finale { margin-bottom: 80px; transform: scale(1.02); }
+        .finale h2 { font-size: 1.8rem; }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop>
+        <source src="song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="scroll-progress"></div>
+
+    <div id="splash-screen">
+        <div class="envelope">💌</div>
+        <h2>Un pequeño regalo para mi preciosa<br>niña en nuestro primer mes juntos.</h2>
+        <h3>Para ti, Pia.</h3>
+    </div>
+
+    <div class="particles-container" id="particles">
+        </div>
+
+    <header>
+        <h1>¡Feliz primer mes de aniversario! <span class="heart">❤️</span></h1>
+        <p>Espero con ilusión nuestro futuro. Esto es solo una pequeña muestra de amor de mi parte.</p>
+    </header>
+
+    <div class="timeline">
+        
+        <div class="container left">
+            <div class="content">
+                <h2>momentos divertidos</h2>
+                <p>¿Te acuerdas? Te enojabas cada vez que decía la palabra "lo que sea".</p>
+                <div class="img-wrapper"><img src="anger.png" loading="lazy" alt="Momentos divertidos"></div>
+            </div>
+        </div>
+
+        <div class="container right">
+            <div class="content">
+                <h2>luego mas enojo</h2>
+                <p>Solías enojarte cada vez que me hacía el tonto :)</p>
+                <div class="img-wrapper"><img src="even.png" loading="lazy" alt="Mas enojo"></div>
+            </div>
+        </div>
+
+        <div class="container left">
+            <div class="content">
+                <h2>acercándose</h2>
+                <p>y luego compartiendo secretos juntos, aunque eras principalmente tú.</p>
+                <div class="img-wrapper"><img src="secret.png" loading="lazy" alt="Secretos"></div>
+            </div>
+        </div>
+
+        <div class="container right">
+            <div class="content">
+                <h2>compartir ranking</h2>
+                <p>Recuerdo que quería permanecer uno al lado del otro en esta clasificación.</p>
+                <div class="img-wrapper"><img src="then.png" loading="lazy" alt="Ranking"></div>
+            </div>
+        </div>
+
+        <div class="container left">
+            <div class="content">
+                <h2>entonces empezó</h2>
+                <p>Nos acercamos y nos aceptamos mutuamente.</p>
+                <div class="img-wrapper"><img src="background.png" loading="lazy" alt="Aceptacion"></div>
+            </div>
+        </div>
+
+        <div class="container right">
+            <div class="content">
+                <h2>Te amo mucho</h2>
+                <p>empezamos a unir fotos</p>
+                <div class="img-wrapper"><img src="num1.png" loading="lazy" alt="Unir fotos"></div>
+            </div>
+        </div>
+
+        <div class="container left">
+            <div class="content">
+                <h2>Te amo muchísimo</h2>
+                <p>y luego aún más fotos</p>
+                <div class="img-wrapper"><img src="num2.png" loading="lazy" alt="Mas fotos"></div>
+            </div>
+        </div>
+
+        <div class="container right">
+            <div class="content">
+                <h2>nuestra historia de amor</h2>
+                <p>Un regalo lleno de amor de mi hermano Grinszwerg.</p>
+                <div class="img-wrapper"><img src="book.png" loading="lazy" alt="Historia de amor"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="sub-header letter">
+        <p>Sé que tendremos nuestros altibajos, pero seguiremos adelante. Hay una distancia entre nosotros, pero eso nos unirá aún más.</p>
+        <p>Este podría ser el comienzo de una eternidad, y eso me hace desearlo más que nada en el mundo.</p>
+        <p>Te daré todo de mí y haré todo lo posible por ti. Y solo quiero tu amor a cambio.</p>
+        <p>Y luego están los planes que hicimos para el futuro ;)<br>desplázate hacia abajo para verlos.<br>Te amo, siempre.</p>
+    </div>
+
+    <div class="timeline">
+        
+        <div class="container right"><div class="content picture-only"><div class="img-wrapper"><img src="this.png" loading="lazy"></div></div></div>
+        <div class="container left"><div class="content picture-only"><div class="img-wrapper"><img src="cafe.png" loading="lazy"></div></div></div>
+        <div class="container right"><div class="content picture-only"><div class="img-wrapper"><img src="booth.png" loading="lazy"></div></div></div>
+        <div class="container left"><div class="content picture-only"><div class="img-wrapper"><img src="amazing.png" loading="lazy"></div></div></div>
+        <div class="container right"><div class="content picture-only"><div class="img-wrapper"><img src="eye.png" loading="lazy"></div></div></div>
+        <div class="container left"><div class="content picture-only"><div class="img-wrapper"><img src="kitchen.png" loading="lazy"></div></div></div>
+        <div class="container right"><div class="content picture-only"><div class="img-wrapper"><img src="kitchen2.png" loading="lazy"></div></div></div>
+        <div class="container left"><div class="content picture-only"><div class="img-wrapper"><img src="beach.png" loading="lazy"></div></div></div>
+        <div class="container right"><div class="content picture-only"><div class="img-wrapper"><img src="mount.png" loading="lazy"></div></div></div>
+        <div class="container left"><div class="content picture-only"><div class="img-wrapper"><img src="lake.png" loading="lazy"></div></div></div>
+        <div class="container right"><div class="content picture-only"><div class="img-wrapper"><img src="laph.png" loading="lazy"></div></div></div>
+        <div class="container left"><div class="content picture-only"><div class="img-wrapper"><img src="gn.png" loading="lazy"></div></div></div>
+        <div class="container right"><div class="content picture-only"><div class="img-wrapper"><img src="sleeps.png" loading="lazy"></div></div></div>
+        <div class="container left"><div class="content picture-only"><div class="img-wrapper"><img src="loves.png" loading="lazy"></div></div></div>
+        <div class="container right"><div class="content picture-only"><div class="img-wrapper"><img src="gaming.png" loading="lazy"></div></div></div>
+        <div class="container left"><div class="content picture-only"><div class="img-wrapper"><img src="hugb.png" loading="lazy"></div></div></div>
+        <div class="container right"><div class="content picture-only"><div class="img-wrapper"><img src="kiss.png" loading="lazy"></div></div></div>
+        <div class="container left"><div class="content picture-only"><div class="img-wrapper"><img src="stg.png" loading="lazy"></div></div></div>
+        <div class="container right"><div class="content picture-only"><div class="img-wrapper"><img src="piggyback.png" loading="lazy"></div></div></div>
+        <div class="container left"><div class="content picture-only"><div class="img-wrapper"><img src="nigl.png" loading="lazy"></div></div></div>
+        <div class="container right"><div class="content picture-only"><div class="img-wrapper"><img src="asd.png" loading="lazy"></div></div></div>
+        <div class="container left"><div class="content picture-only"><div class="img-wrapper"><img src="knq.png" loading="lazy"></div></div></div>
+        <div class="container right"><div class="content picture-only"><div class="img-wrapper"><img src="comb.png" loading="lazy"></div></div></div>
+
+    </div>
+
+    <div class="sub-header finale">
+        <h2>Te amo, mi pequeña señorita.<br><br>Por siempre y para siempre te amaré hasta que muera, e incluso después de morir.</h2>
+    </div>
+
+    <script>
+        // --- 1. SPLASH SCREEN & AUDIO LOGIC ---
+        const splashScreen = document.getElementById('splash-screen');
+        const bgMusic = document.getElementById('bg-music');
+        
+        splashScreen.addEventListener('click', () => {
+            splashScreen.style.opacity = '0';
+            // Start the music! (Use a try-catch to prevent browser errors if no audio file is present)
+            try { bgMusic.play(); } catch(e) {}
+            
+            setTimeout(() => {
+                splashScreen.style.visibility = 'hidden';
+            }, 1000); 
+        });
+
+        // --- 2. SCROLL ANIMATION LOGIC ---
+        const containers = document.querySelectorAll('.container');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show');
+                    observer.unobserve(entry.target); 
+                }
+            });
+        }, {
+            threshold: 0.2 
+        });
+
+        containers.forEach(container => {
+            observer.observe(container);
+        });
+
+        // --- 3. DYNAMIC HEART PARTICLES ---
+        function createParticle() {
+            const container = document.getElementById('particles');
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.innerHTML = '❤';
+            
+            // Randomize position, size, and animation duration
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.fontSize = (Math.random() * 1 + 0.8) + 'rem';
+            particle.style.animationDuration = (Math.random() * 10 + 15) + 's'; // Between 15s and 25s
+            
+            container.appendChild(particle);
+            
+            // Remove the particle after it floats off screen to save memory
+            setTimeout(() => {
+                particle.remove();
+            }, 25000);
+        }
+        
+        // Spawn a new heart every 800 milliseconds
+        setInterval(createParticle, 800);
+
+        // --- 4. SCROLL PROGRESS BAR ---
+        window.addEventListener('scroll', () => {
+            const scrollPx = document.documentElement.scrollTop;
+            const winHeightPx = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = `${scrollPx / winHeightPx * 100}%`;
+            document.getElementById('scroll-progress').style.width = scrolled;
+        });
+    </script>
+
+</body>
+</html>
