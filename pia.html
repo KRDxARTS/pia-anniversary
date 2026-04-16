@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir Foto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fff5f6;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .upload-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 117, 140, 0.15);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        h2 { 
+            color: #ff758c; 
+            margin-bottom: 20px; 
+        }
+        input[type="file"] {
+            margin-bottom: 20px;
+            width: 100%;
+            padding: 10px;
+            border: 1px dashed #ffb8c6;
+            border-radius: 10px;
+        }
+        button {
+            background: #ff758c;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+        }
+        button:hover { 
+            background: #ff5e78; 
+            transform: translateY(-2px);
+        }
+        button:disabled { 
+            background: #ffb8c6; 
+            cursor: not-allowed; 
+            transform: none;
+        }
+        #status { 
+            margin-top: 15px; 
+            font-size: 0.9rem; 
+            color: #636e72; 
+            min-height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="upload-card">
+        <h2>Añadir a la galería 💌</h2>
+        <input type="file" id="image-input" accept="image/png, image/jpeg, image/webp">
+        <button id="upload-btn">Subir Foto</button>
+        <p id="status"></p>
+    </div>
+
+    <script type="module">
+        // 1. Import the specific Firebase tools needed for uploading
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+
+        // 2. YOUR FIREBASE CONFIGURATION 
+        // IMPORTANT: Paste the exact same configuration you put in your main HTML file here!
+        const firebaseConfig = {
+            apiKey: "AIzaSyAJ00HQmAPHqSR0bE3ffc1b51ekP-qUS6U",
+            authDomain: "pia-gallery.firebaseapp.com",
+            projectId: "pia-gallery",
+            storageBucket: "pia-gallery.firebasestorage.app",
+            messagingSenderId: "668426441929",
+            appId: "1:668426441929:web:417f00314ad4c74816a918"
+            };
+
+        // 3. Initialize Firebase (Booting it up)
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // 4. The Upload Logic
+        const uploadBtn = document.getElementById('upload-btn');
+        const fileInput = document.getElementById('image-input');
+        const statusText = document.getElementById('status');
+
+        uploadBtn.addEventListener('click', async () => {
+            const file = fileInput.files[0];
+            
+            // Check if they actually selected a file
+            if (!file) {
+                statusText.innerText = "Por favor, selecciona una imagen primero.";
+                statusText.style.color = "red";
+                return;
+            }
+
+            // Disable button so they don't click it twice, and show a loading message
+            uploadBtn.disabled = true;
+            statusText.innerText = "Subiendo imagen... ⏳";
+            statusText.style.color = "#636e72";
+
+            try {
+                // We add Date.now() to the file name so if you upload two photos named "image.jpg", 
+                // they don't accidentally overwrite each other in the database.
+                const uniqueFileName = Date.now() + '_' + file.name;
+                const storageRef = ref(storage, 'images/' + uniqueFileName);
+
+                // Step A: Upload the actual file to Firebase Storage
+                const uploadTask = await uploadBytesResumable(storageRef, file);
+
+                // Step B: Ask Firebase for the permanent public link to that uploaded image
+                const downloadURL = await getDownloadURL(storageRef);
+
+                // Step C: Save that link into your Firestore database so your main website can find it
+                await addDoc(collection(db, "images"), {
+                    url: downloadURL,
+                    createdAt: serverTimestamp() // Saves the exact time so you can order them later
+                });
+
+                // Success!
+                statusText.innerText = "¡Foto subida con éxito! 🎉";
+                statusText.style.color = "green";
+                fileInput.value = ""; // Clear the input box for the next photo
+
+            } catch (error) {
+                console.error("Upload failed:", error);
+                statusText.innerText = "Hubo un error al subir la foto.";
+                statusText.style.color = "red";
+            } finally {
+                // Re-enable the button whether it succeeded or failed
+                uploadBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
