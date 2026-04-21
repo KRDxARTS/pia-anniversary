@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subir Foto</title>
+    <title>Panel de Administración</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         body {
             background-color: #fff5f6;
             font-family: 'Poppins', sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
+            padding: 40px 20px;
             margin: 0;
+            min-height: 100vh;
         }
         .upload-card {
             background: white;
@@ -21,13 +22,12 @@
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(255, 117, 140, 0.15);
             text-align: center;
+            width: 100%;
             max-width: 400px;
-            width: 90%;
         }
-        h2 { 
-            color: #ff758c; 
-            margin-bottom: 20px; 
-        }
+        h2 { color: #ff758c; margin-bottom: 20px; }
+        h3 { color: #2d3436; margin-top: 40px; margin-bottom: 15px; font-weight: 500;}
+        
         input[type="file"] {
             margin-bottom: 20px;
             width: 100%;
@@ -48,21 +48,47 @@
             font-family: 'Poppins', sans-serif;
             font-weight: 500;
         }
-        button:hover { 
-            background: #ff5e78; 
-            transform: translateY(-2px);
+        button:hover { background: #ff5e78; transform: translateY(-2px);}
+        button:disabled { background: #ffb8c6; cursor: not-allowed; transform: none;}
+        #status { margin-top: 15px; font-size: 0.9rem; color: #636e72; min-height: 20px;}
+
+        /* --- NEW: GALLERY GRID STYLES --- */
+        .admin-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            width: 100%;
+            max-width: 500px;
         }
-        button:disabled { 
-            background: #ffb8c6; 
-            cursor: not-allowed; 
-            transform: none;
+        .admin-thumb {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            background: white;
         }
-        #status { 
-            margin-top: 15px; 
-            font-size: 0.9rem; 
-            color: #636e72; 
-            min-height: 20px;
+        .admin-thumb img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            display: block;
         }
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 71, 87, 0.9); /* Red */
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            font-size: 14px;
+            line-height: 28px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .delete-btn:hover { background: red; }
     </style>
 </head>
 <body>
@@ -74,14 +100,17 @@
         <p id="status"></p>
     </div>
 
-    <script type="module">
-        // 1. Import the specific Firebase tools needed for uploading
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+    <h3>Gestionar Fotos</h3>
+    <div class="admin-gallery" id="admin-gallery">
+        </div>
 
-        // 2. YOUR FIREBASE CONFIGURATION 
-        // IMPORTANT: Paste the exact same configuration you put in your main HTML file here!
+    <script type="module">
+        // 1. We imported NEW tools: getDocs, query, orderBy, deleteDoc, doc, and deleteObject
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, getDocs, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+
+        // IMPORTANT: Paste your exact configuration here!
         const firebaseConfig = {
             apiKey: "AIzaSyAJ00HQmAPHqSR0bE3ffc1b51ekP-qUS6U",
             authDomain: "pia-gallery.firebaseapp.com",
@@ -91,63 +120,135 @@
             appId: "1:668426441929:web:417f00314ad4c74816a918"
             };
 
-        // 3. Initialize Firebase (Booting it up)
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        // 4. The Upload Logic
         const uploadBtn = document.getElementById('upload-btn');
         const fileInput = document.getElementById('image-input');
         const statusText = document.getElementById('status');
+        const galleryContainer = document.getElementById('admin-gallery');
 
+        // --- NEW: FETCH AND DISPLAY IMAGES TO MANAGE ---
+        async function loadAdminGallery() {
+            galleryContainer.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #636e72;">Cargando fotos...</p>';
+            
+            try {
+                // Fetch images from newest to oldest
+                const q = query(collection(db, "images"), orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                galleryContainer.innerHTML = ''; // Clear loading text
+                
+                querySnapshot.forEach((documentSnap) => {
+                    const data = documentSnap.data();
+                    const docId = documentSnap.id; // The ID of the text record
+                    const imageUrl = data.url; // The link to the actual file
+                    
+                    const thumbDiv = document.createElement('div');
+                    thumbDiv.className = 'admin-thumb';
+                    
+                    thumbDiv.innerHTML = `
+                        <img src="${imageUrl}" alt="Gallery Image">
+                        <button class="delete-btn" data-id="${docId}" data-url="${imageUrl}">✖</button>
+                    `;
+                    
+                    galleryContainer.appendChild(thumbDiv);
+                });
+
+                // Add the "Delete" action to all the new red buttons
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', handleDelete);
+                });
+
+            } catch (error) {
+                console.error("Error loading gallery:", error);
+                galleryContainer.innerHTML = '<p>Error al cargar la galería.</p>';
+            }
+        }
+
+        // --- NEW: THE DELETE LOGIC ---
+        async function handleDelete(event) {
+            // Ask for confirmation so you don't delete by accident
+            const confirmDelete = confirm("¿Estás seguro de que quieres eliminar esta foto permanentemente?");
+            if (!confirmDelete) return;
+
+            const btn = event.target;
+            const docId = btn.getAttribute('data-id');
+            const imageUrl = btn.getAttribute('data-url');
+            
+            // Visual feedback: change button to a loading state
+            btn.innerText = "⏳";
+            btn.disabled = true;
+
+            try {
+                // 1. Try to delete the actual image file from Cloud Storage
+                try {
+                    const imageRef = ref(storage, imageUrl);
+                    await deleteObject(imageRef);
+                } catch (storageError) {
+                    // We wrap this in its own try/catch just in case you already deleted the image file manually.
+                    // This ensures the code keeps running to clean up the "ghost frame" record.
+                    console.log("File might already be missing from storage. Proceeding to delete record.");
+                }
+
+                // 2. Delete the text record from the Firestore database
+                await deleteDoc(doc(db, "images", docId));
+
+                // 3. Remove the picture from your screen instantly
+                btn.parentElement.remove();
+                alert("Foto eliminada con éxito.");
+
+            } catch (error) {
+                console.error("Error deleting image:", error);
+                alert("Hubo un error al eliminar la foto.");
+                btn.innerText = "✖";
+                btn.disabled = false;
+            }
+        }
+
+        // --- THE UPLOAD LOGIC (Unchanged, but refreshes gallery after) ---
         uploadBtn.addEventListener('click', async () => {
             const file = fileInput.files[0];
-            
-            // Check if they actually selected a file
             if (!file) {
                 statusText.innerText = "Por favor, selecciona una imagen primero.";
                 statusText.style.color = "red";
                 return;
             }
 
-            // Disable button so they don't click it twice, and show a loading message
             uploadBtn.disabled = true;
             statusText.innerText = "Subiendo imagen... ⏳";
             statusText.style.color = "#636e72";
 
             try {
-                // We add Date.now() to the file name so if you upload two photos named "image.jpg", 
-                // they don't accidentally overwrite each other in the database.
                 const uniqueFileName = Date.now() + '_' + file.name;
                 const storageRef = ref(storage, 'images/' + uniqueFileName);
-
-                // Step A: Upload the actual file to Firebase Storage
                 const uploadTask = await uploadBytesResumable(storageRef, file);
-
-                // Step B: Ask Firebase for the permanent public link to that uploaded image
                 const downloadURL = await getDownloadURL(storageRef);
 
-                // Step C: Save that link into your Firestore database so your main website can find it
                 await addDoc(collection(db, "images"), {
                     url: downloadURL,
-                    createdAt: serverTimestamp() // Saves the exact time so you can order them later
+                    createdAt: serverTimestamp()
                 });
 
-                // Success!
                 statusText.innerText = "¡Foto subida con éxito! 🎉";
                 statusText.style.color = "green";
-                fileInput.value = ""; // Clear the input box for the next photo
+                fileInput.value = ""; 
+                
+                // Refresh the gallery grid so the new photo appears instantly on the admin page!
+                loadAdminGallery();
 
             } catch (error) {
                 console.error("Upload failed:", error);
                 statusText.innerText = "Hubo un error al subir la foto.";
                 statusText.style.color = "red";
             } finally {
-                // Re-enable the button whether it succeeded or failed
                 uploadBtn.disabled = false;
             }
         });
+
+        // Load the gallery grid as soon as you open the page
+        loadAdminGallery();
     </script>
 </body>
 </html>
