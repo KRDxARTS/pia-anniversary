@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Para ti, Pia</title>
+    <title>Para ti, Pia - Galería</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,13 +12,11 @@
     <style>
         :root {
             --bg-midnight: #070810;
-            --card-bg: rgba(20, 22, 35, 0.4);
-            --card-border: rgba(255, 255, 255, 0.08);
             --text-main: #FDFDFD;
             --text-muted: #B0B3C5;
             --accent-rose: #E8A5B2;
             --accent-gold: #DFCA97;
-            --glow-shadow: 0 10px 40px -10px rgba(232, 165, 178, 0.2);
+            --card-border: rgba(255, 255, 255, 0.08);
         }
 
         * {
@@ -47,7 +45,6 @@
             background: radial-gradient(circle at top right, #11142A 0%, var(--bg-midnight) 80%);
         }
 
-        /* Pure CSS Stars */
         .stars {
             position: fixed;
             inset: 0;
@@ -126,79 +123,14 @@
         }
 
         /* --- HEADER --- */
-        header { text-align: center; padding: 20vh 20px 15vh; position: relative; }
+        header { text-align: center; padding: 15vh 20px 5vh; position: relative; }
         header h1 { font-size: clamp(3.5rem, 8vw, 6rem); font-style: italic; margin-bottom: 20px; background: linear-gradient(to right, #fff, var(--accent-rose)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         header p { font-size: 1.2rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.8; font-weight: 300; }
-
-        /* --- CENTER GLOWING TIMELINE --- */
-        .timeline {
-            position: relative; max-width: 1200px; margin: 0 auto; padding: 50px 20px;
-        }
-
-        .timeline::before {
-            content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 1px; height: 100%; background: linear-gradient(to bottom, transparent, var(--accent-rose), transparent);
-            opacity: 0.3;
-        }
-
-        .timeline-card {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 12vh; position: relative; width: 100%;
-        }
-
-        .timeline-card.reveal .card-content { opacity: 1; transform: translateY(0); }
-
-        .timeline-card:nth-child(odd) { flex-direction: row-reverse; }
-        .timeline-card:nth-child(odd) .card-content { transform: translateX(50px) translateY(30px); }
-        .timeline-card:nth-child(even) .card-content { transform: translateX(-50px) translateY(30px); }
-
-        .timeline-card::after {
-            content: ''; position: absolute; left: 50%; top: 50%;
-            transform: translate(-50%, -50%); width: 12px; height: 12px;
-            background: var(--bg-midnight); border: 2px solid var(--accent-rose);
-            border-radius: 50%; box-shadow: 0 0 15px var(--accent-rose); z-index: 2;
-        }
-
-        .card-content {
-            width: 45%; background: var(--card-bg); backdrop-filter: blur(12px);
-            border: 1px solid var(--card-border); border-radius: 20px;
-            padding: 40px; opacity: 0; transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: var(--glow-shadow);
-        }
-
-        .card-content h2 { font-size: 2.2rem; color: var(--accent-gold); margin-bottom: 15px; font-style: italic; }
-        .card-content p { font-size: 1rem; color: var(--text-muted); line-height: 1.7; font-weight: 300; margin-bottom: 25px; }
-        
-        .img-wrapper { border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
-        .img-wrapper img { width: 100%; display: block; transition: transform 0.7s ease; }
-        .card-content:hover .img-wrapper img { transform: scale(1.05); }
-
-        /* --- THE ELEGANT LETTER --- */
-        .letter-section {
-            max-width: 800px; margin: 15vh auto; padding: 80px 60px;
-            background: linear-gradient(145deg, rgba(30, 32, 45, 0.6), rgba(15, 16, 25, 0.8));
-            border: 1px solid rgba(223, 202, 151, 0.15); border-radius: 8px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 0 50px rgba(0,0,0,0.5);
-            text-align: center; position: relative;
-            opacity: 0; transform: translateY(30px); transition: all 1s ease;
-        }
-
-        .letter-section.reveal { opacity: 1; transform: translateY(0); }
-
-        .letter-section::before {
-            content: '❤'; position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
-            width: 40px; height: 40px; background: var(--accent-rose); color: var(--bg-midnight);
-            display: flex; align-items: center; justify-content: center; border-radius: 50%;
-            font-size: 1.2rem; box-shadow: 0 5px 15px rgba(232, 165, 178, 0.3);
-        }
-
-        .letter-section p { font-size: 1.1rem; line-height: 2.2; color: #E0E2EC; margin-bottom: 25px; font-weight: 300; }
-        .letter-section p:last-child { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; color: var(--accent-gold); margin-top: 50px; font-style: italic; }
 
         /* --- HOVER-FOCUS GALLERY --- */
         .gallery-title { 
             text-align: center; font-size: 3.5rem; font-style: italic; 
-            margin: 15vh 0 8vh; color: var(--text-main); 
+            margin: 5vh 0 8vh; color: var(--text-main); 
             opacity: 0; transition: opacity 1s ease;
         }
         .gallery-title.reveal { opacity: 1; }
@@ -228,10 +160,10 @@
 
         /* --- FINALE --- */
         .finale { 
-            text-align: center; padding: 15vh 20px 20vh; 
-            opacity: 0; transition: opacity 1s ease;
+            text-align: center; padding: 5vh 20px 15vh; 
+            opacity: 0; transform: translateY(30px); transition: all 1s ease;
         }
-        .finale.reveal { opacity: 1; }
+        .finale.reveal { opacity: 1; transform: translateY(0); }
         .finale h2 { font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.5; font-style: italic; max-width: 900px; margin: 0 auto; color: var(--accent-rose); }
 
         /* --- NAVIGATION BUTTON (Back to Page 1) --- */
@@ -268,11 +200,6 @@
 
         /* --- RESPONSIVE MOBILE --- */
         @media (max-width: 900px) {
-            .timeline::before { left: 20px; }
-            .timeline-card { flex-direction: column !important; align-items: flex-end; margin-bottom: 8vh; }
-            .timeline-card::after { left: 20px; }
-            .card-content { width: calc(100% - 60px); transform: translateY(30px) !important; padding: 30px 20px; }
-            .letter-section { margin: 10vh 20px; padding: 50px 30px; }
             .gallery { columns: 2 150px; }
         }
     </style>
@@ -295,90 +222,14 @@
 
     <div id="splash-screen">
         <h2>Para ti, Pia.</h2>
-        <button class="enter-btn" id="enter-btn">Abrir Regalo</button>
+        <button class="enter-btn" id="enter-btn">Abrir Galería</button>
     </div>
 
     <header>
-        <h1 class="reveal-item">¡Feliz primer mes!</h1>
-        <p class="reveal-item">Espero con ilusión nuestro futuro. Esto es solo una pequeña muestra de amor de mi parte.</p>
+        <h1 class="reveal-item">Nuestra Galería</h1>
+        <p class="reveal-item">Una colección de todos nuestros hermosos recuerdos juntos.</p>
     </header>
 
-    <section class="timeline">
-        <div class="timeline-card reveal-item">
-            <div class="card-content">
-                <h2>momentos divertidos</h2>
-                <p>¿Te acuerdas? Te enojabas cada vez que decía la palabra "lo que sea".</p>
-                <div class="img-wrapper"><img src="anger.png" loading="lazy" alt="Momentos"></div>
-            </div>
-        </div>
-
-        <div class="timeline-card reveal-item">
-            <div class="card-content">
-                <h2>luego mas enojo</h2>
-                <p>Solías enojarte cada vez que me hacía el tonto :)</p>
-                <div class="img-wrapper"><img src="even.png" loading="lazy" alt="Mas enojo"></div>
-            </div>
-        </div>
-
-        <div class="timeline-card reveal-item">
-            <div class="card-content">
-                <h2>acercándose</h2>
-                <p>y luego compartiendo secretos juntos, aunque eras principalmente tú.</p>
-                <div class="img-wrapper"><img src="secret.png" loading="lazy" alt="Secretos"></div>
-            </div>
-        </div>
-
-        <div class="timeline-card reveal-item">
-            <div class="card-content">
-                <h2>compartir ranking</h2>
-                <p>Recuerdo que quería permanecer uno al lado del otro en esta clasificación.</p>
-                <div class="img-wrapper"><img src="then.png" loading="lazy" alt="Ranking"></div>
-            </div>
-        </div>
-
-        <div class="timeline-card reveal-item">
-            <div class="card-content">
-                <h2>entonces empezó</h2>
-                <p>Nos acercamos y nos aceptamos mutuamente.</p>
-                <div class="img-wrapper"><img src="background.png" loading="lazy" alt="Aceptacion"></div>
-            </div>
-        </div>
-
-        <div class="timeline-card reveal-item">
-            <div class="card-content">
-                <h2>Te amo mucho</h2>
-                <p>empezamos a unir fotos</p>
-                <div class="img-wrapper"><img src="num1.png" loading="lazy" alt="Unir fotos"></div>
-            </div>
-        </div>
-
-        <div class="timeline-card reveal-item">
-            <div class="card-content">
-                <h2>Te amo muchísimo</h2>
-                <p>y luego aún más fotos</p>
-                <div class="img-wrapper"><img src="num2.png" loading="lazy" alt="Mas fotos"></div>
-            </div>
-        </div>
-
-        <div class="timeline-card reveal-item">
-            <div class="card-content">
-                <h2>nuestra historia de amor</h2>
-                <p>Un regalo lleno de amor de mi hermano Grinszwerg.</p>
-                <div class="img-wrapper"><img src="book.png" loading="lazy" alt="Historia"></div>
-            </div>
-        </div>
-    </section>
-
-    <div class="letter-section reveal-item">
-        <p>Sé que tendremos nuestros altibajos, pero seguiremos adelante. Hay una distancia entre nosotros, pero eso nos unirá aún más.</p>
-        <p>Este podría ser el comienzo de una eternidad, y eso me hace desearlo más que nada en el mundo.</p>
-        <p>Te daré todo de mí y haré todo lo posible por ti. Y solo quiero tu amor a cambio.</p>
-        <p>Y luego están los planes que hicimos para el futuro ;)<br>desplázate hacia abajo para verlos.</p>
-        <p>Te amo, siempre.</p>
-    </div>
-
-    <h2 class="gallery-title serif reveal-item">Nuestros Recuerdos</h2>
-    
     <section class="gallery" id="dynamic-gallery-2">
         </section>
 
@@ -388,7 +239,6 @@
     </div>
 
     <script type="module">
-        // --- 1. FIREBASE SETUP & IMPORTS ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
@@ -400,12 +250,12 @@
             storageBucket: "pia-gallery.firebasestorage.app",
             messagingSenderId: "668426441929",
             appId: "1:668426441929:web:417f00314ad4c74816a918"
-          };
+        };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- 2. AUDIO & SPLASH SCREEN LOGIC ---
+        // --- AUDIO & SPLASH SCREEN ---
         const enterBtn = document.getElementById('enter-btn');
         const splashScreen = document.getElementById('splash-screen');
         const bgMusic = document.getElementById('bg-music');
@@ -424,7 +274,7 @@
             setTimeout(() => { splashScreen.style.display = 'none'; }, 1200);
         });
 
-        // --- 3. SCROLL ANIMATION OBSERVER ---
+        // --- SCROLL ANIMATION OBSERVER ---
         const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -50px 0px' };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry, index) => {
@@ -440,13 +290,13 @@
         }, observerOptions);
 
         // Observe the static elements immediately
-        document.querySelectorAll('.timeline-card, .letter-section, .reveal-item').forEach(el => observer.observe(el));
+        document.querySelectorAll('.reveal-item').forEach(el => observer.observe(el));
 
-        // --- 4. FIREBASE GALLERY INJECTION (Specifically for Page 2) ---
+        // --- FIREBASE GALLERY INJECTION ---
         async function loadGalleryTwo() {
             const galleryContainer = document.getElementById('dynamic-gallery-2');
             try {
-                // NOTICE: We are querying "page2_images" instead of "images"
+                // Fetching specifically from "page2_images"
                 const q = query(collection(db, "page2_images"), orderBy("createdAt", "asc"));
                 const querySnapshot = await getDocs(q);
                 
@@ -454,15 +304,11 @@
                     const imageUrl = doc.data().url; 
                     
                     const itemDiv = document.createElement('div');
-                    itemDiv.className = 'gallery-item'; // Using the specific class for your new layout
+                    itemDiv.className = 'gallery-item';
                     
-                    itemDiv.innerHTML = `
-                        <img src="${imageUrl}" loading="lazy" alt="Memory">
-                    `;
+                    itemDiv.innerHTML = `<img src="${imageUrl}" loading="lazy" alt="Memory">`;
                     
                     galleryContainer.appendChild(itemDiv);
-                    
-                    // Tell the scroll observer to watch this new dynamically added photo
                     observer.observe(itemDiv);
                 });
             } catch (error) {
@@ -472,7 +318,7 @@
         
         loadGalleryTwo();
 
-        // --- 5. MAGICAL SPARKLE CURSOR ---
+        // --- MAGICAL SPARKLE CURSOR ---
         if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
             let lastSparkleTime = 0;
             document.addEventListener('mousemove', (e) => {
