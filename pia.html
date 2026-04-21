@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración</title>
+    <title>Panel de Administración Multi-Página</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         body {
@@ -16,101 +16,119 @@
             margin: 0;
             min-height: 100vh;
         }
-        .upload-card {
+        .admin-container {
             background: white;
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(255, 117, 140, 0.15);
+            width: 100%;
+            max-width: 450px;
             text-align: center;
-            width: 100%;
-            max-width: 400px;
         }
-        h2 { color: #ff758c; margin-bottom: 20px; }
-        h3 { color: #2d3436; margin-top: 40px; margin-bottom: 15px; font-weight: 500;}
+        h2 { color: #ff758c; margin-bottom: 25px; }
         
-        input[type="file"] {
+        .form-group {
+            text-align: left;
             margin-bottom: 20px;
-            width: 100%;
-            padding: 10px;
-            border: 1px dashed #ffb8c6;
-            border-radius: 10px;
         }
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #636e72;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        select, input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ffb8c6;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            background: #fffafa;
+        }
+        
         button {
             background: #ff758c;
             color: white;
             border: none;
-            padding: 12px 30px;
+            padding: 14px 30px;
             border-radius: 50px;
             font-size: 1rem;
             cursor: pointer;
             transition: 0.3s;
             width: 100%;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 500;
+            font-weight: 600;
+            margin-top: 10px;
         }
         button:hover { background: #ff5e78; transform: translateY(-2px);}
-        button:disabled { background: #ffb8c6; cursor: not-allowed; transform: none;}
-        #status { margin-top: 15px; font-size: 0.9rem; color: #636e72; min-height: 20px;}
+        button:disabled { background: #ffb8c6; cursor: not-allowed; }
 
-        /* --- NEW: GALLERY GRID STYLES --- */
+        #status { margin-top: 15px; font-size: 0.9rem; min-height: 20px;}
+
+        hr { border: 0; border-top: 1px solid #eee; margin: 30px 0; }
+
+        /* --- GALLERY SECTION --- */
         .admin-gallery {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             gap: 15px;
             width: 100%;
-            max-width: 500px;
+            margin-top: 20px;
         }
         .admin-thumb {
             position: relative;
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            background: white;
-        }
-        .admin-thumb img {
-            width: 100%;
             height: 100px;
-            object-fit: cover;
-            display: block;
         }
+        .admin-thumb img { width: 100%; height: 100%; object-fit: cover; }
         .delete-btn {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(255, 71, 87, 0.9); /* Red */
+            top: 5px; right: 5px;
+            background: rgba(255, 71, 87, 0.9);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            padding: 0;
-            font-size: 14px;
-            line-height: 28px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            width: 26px; height: 26px;
+            font-size: 12px; cursor: pointer;
         }
-        .delete-btn:hover { background: red; }
     </style>
 </head>
 <body>
 
-    <div class="upload-card">
-        <h2>Añadir a la galería 💌</h2>
-        <input type="file" id="image-input" accept="image/png, image/jpeg, image/webp">
-        <button id="upload-btn">Subir Foto</button>
-        <p id="status"></p>
-    </div>
-
-    <h3>Gestionar Fotos</h3>
-    <div class="admin-gallery" id="admin-gallery">
+    <div class="admin-container">
+        <h2>Panel de Control 💌</h2>
+        
+        <div class="form-group">
+            <label>Seleccionar Destino:</label>
+            <select id="page-selector">
+                <option value="images">Página 1 (Rosa)</option>
+                <option value="page2_images">Página 2 (Medianoche)</option>
+            </select>
         </div>
 
+        <div class="form-group">
+            <label>Subir nueva foto:</label>
+            <input type="file" id="image-input" accept="image/*">
+        </div>
+
+        <button id="upload-btn">Subir a la Galería</button>
+        <p id="status"></p>
+
+        <hr>
+
+        <h3 style="font-weight: 500; font-size: 1.1rem; margin-bottom: 10px;">Gestionar Fotos Existentes</h3>
+        <div class="admin-gallery" id="admin-gallery">
+            </div>
+    </div>
+
     <script type="module">
-        // 1. We imported NEW tools: getDocs, query, orderBy, deleteDoc, doc, and deleteObject
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp, getDocs, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
-        // IMPORTANT: Paste your exact configuration here!
+        // PEGA TUS LLAVES AQUÍ
         const firebaseConfig = {
             apiKey: "AIzaSyAJ00HQmAPHqSR0bE3ffc1b51ekP-qUS6U",
             authDomain: "pia-gallery.firebaseapp.com",
@@ -118,136 +136,100 @@
             storageBucket: "pia-gallery.firebasestorage.app",
             messagingSenderId: "668426441929",
             appId: "1:668426441929:web:417f00314ad4c74816a918"
-            };
+        };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const storage = getStorage(app);
 
+        const pageSelector = document.getElementById('page-selector');
         const uploadBtn = document.getElementById('upload-btn');
         const fileInput = document.getElementById('image-input');
         const statusText = document.getElementById('status');
         const galleryContainer = document.getElementById('admin-gallery');
 
-        // --- NEW: FETCH AND DISPLAY IMAGES TO MANAGE ---
+        // FUNCIÓN: Cargar la galería según la página seleccionada
         async function loadAdminGallery() {
-            galleryContainer.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #636e72;">Cargando fotos...</p>';
+            const currentCollection = pageSelector.value;
+            galleryContainer.innerHTML = '<p style="grid-column: 1/-1; font-size: 0.8rem;">Cargando...</p>';
             
             try {
-                // Fetch images from newest to oldest
-                const q = query(collection(db, "images"), orderBy("createdAt", "desc"));
+                const q = query(collection(db, currentCollection), orderBy("createdAt", "desc"));
                 const querySnapshot = await getDocs(q);
-                
-                galleryContainer.innerHTML = ''; // Clear loading text
+                galleryContainer.innerHTML = '';
                 
                 querySnapshot.forEach((documentSnap) => {
                     const data = documentSnap.data();
-                    const docId = documentSnap.id; // The ID of the text record
-                    const imageUrl = data.url; // The link to the actual file
+                    const docId = documentSnap.id;
+                    const imageUrl = data.url;
                     
-                    const thumbDiv = document.createElement('div');
-                    thumbDiv.className = 'admin-thumb';
-                    
-                    thumbDiv.innerHTML = `
-                        <img src="${imageUrl}" alt="Gallery Image">
+                    const thumb = document.createElement('div');
+                    thumb.className = 'admin-thumb';
+                    thumb.innerHTML = `
+                        <img src="${imageUrl}">
                         <button class="delete-btn" data-id="${docId}" data-url="${imageUrl}">✖</button>
                     `;
-                    
-                    galleryContainer.appendChild(thumbDiv);
+                    galleryContainer.appendChild(thumb);
                 });
 
-                // Add the "Delete" action to all the new red buttons
                 document.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', handleDelete);
+                    btn.onclick = handleDelete;
                 });
-
-            } catch (error) {
-                console.error("Error loading gallery:", error);
-                galleryContainer.innerHTML = '<p>Error al cargar la galería.</p>';
+            } catch (e) {
+                galleryContainer.innerHTML = '<p>Sin fotos aún.</p>';
             }
         }
 
-        // --- NEW: THE DELETE LOGIC ---
-        async function handleDelete(event) {
-            // Ask for confirmation so you don't delete by accident
-            const confirmDelete = confirm("¿Estás seguro de que quieres eliminar esta foto permanentemente?");
-            if (!confirmDelete) return;
-
-            const btn = event.target;
+        // FUNCIÓN: Eliminar
+        async function handleDelete(e) {
+            if(!confirm("¿Eliminar permanentemente?")) return;
+            const btn = e.target;
             const docId = btn.getAttribute('data-id');
             const imageUrl = btn.getAttribute('data-url');
-            
-            // Visual feedback: change button to a loading state
-            btn.innerText = "⏳";
-            btn.disabled = true;
+            const currentCollection = pageSelector.value;
 
             try {
-                // 1. Try to delete the actual image file from Cloud Storage
-                try {
-                    const imageRef = ref(storage, imageUrl);
-                    await deleteObject(imageRef);
-                } catch (storageError) {
-                    // We wrap this in its own try/catch just in case you already deleted the image file manually.
-                    // This ensures the code keeps running to clean up the "ghost frame" record.
-                    console.log("File might already be missing from storage. Proceeding to delete record.");
-                }
-
-                // 2. Delete the text record from the Firestore database
-                await deleteDoc(doc(db, "images", docId));
-
-                // 3. Remove the picture from your screen instantly
+                try { await deleteObject(ref(storage, imageUrl)); } catch(err) {}
+                await deleteDoc(doc(db, currentCollection, docId));
                 btn.parentElement.remove();
-                alert("Foto eliminada con éxito.");
-
-            } catch (error) {
-                console.error("Error deleting image:", error);
-                alert("Hubo un error al eliminar la foto.");
-                btn.innerText = "✖";
-                btn.disabled = false;
-            }
+            } catch (err) { alert("Error al eliminar"); }
         }
 
-        // --- THE UPLOAD LOGIC (Unchanged, but refreshes gallery after) ---
-        uploadBtn.addEventListener('click', async () => {
+        // ACCIÓN: Al cambiar de página en el menú
+        pageSelector.onchange = loadAdminGallery;
+
+        // ACCIÓN: Subir Foto
+        uploadBtn.onclick = async () => {
             const file = fileInput.files[0];
-            if (!file) {
-                statusText.innerText = "Por favor, selecciona una imagen primero.";
-                statusText.style.color = "red";
-                return;
-            }
+            const targetCollection = pageSelector.value;
+
+            if (!file) { statusText.innerText = "Selecciona un archivo"; return; }
 
             uploadBtn.disabled = true;
-            statusText.innerText = "Subiendo imagen... ⏳";
-            statusText.style.color = "#636e72";
+            statusText.innerText = "Subiendo... ⏳";
 
             try {
-                const uniqueFileName = Date.now() + '_' + file.name;
-                const storageRef = ref(storage, 'images/' + uniqueFileName);
-                const uploadTask = await uploadBytesResumable(storageRef, file);
-                const downloadURL = await getDownloadURL(storageRef);
+                const fileName = Date.now() + "_" + file.name;
+                const storageRef = ref(storage, 'gallery/' + fileName);
+                await uploadBytesResumable(storageRef, file);
+                const url = await getDownloadURL(storageRef);
 
-                await addDoc(collection(db, "images"), {
-                    url: downloadURL,
+                await addDoc(collection(db, targetCollection), {
+                    url: url,
                     createdAt: serverTimestamp()
                 });
 
-                statusText.innerText = "¡Foto subida con éxito! 🎉";
-                statusText.style.color = "green";
-                fileInput.value = ""; 
-                
-                // Refresh the gallery grid so the new photo appears instantly on the admin page!
+                statusText.innerText = "¡Éxito! 🎉";
+                fileInput.value = "";
                 loadAdminGallery();
-
-            } catch (error) {
-                console.error("Upload failed:", error);
-                statusText.innerText = "Hubo un error al subir la foto.";
-                statusText.style.color = "red";
+            } catch (e) {
+                statusText.innerText = "Error al subir";
             } finally {
                 uploadBtn.disabled = false;
             }
-        });
+        };
 
-        // Load the gallery grid as soon as you open the page
+        // Carga inicial
         loadAdminGallery();
     </script>
 </body>
