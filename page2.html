@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para ti, Pia</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-midnight: #070810;
+            --card-bg: rgba(20, 22, 35, 0.4);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #FDFDFD;
+            --text-muted: #B0B3C5;
+            --accent-rose: #E8A5B2;
+            --accent-gold: #DFCA97;
+            --glow-shadow: 0 10px 40px -10px rgba(232, 165, 178, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-midnight);
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-main);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, .serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* --- STARRY MIDNIGHT BACKGROUND --- */
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -3;
+            background: radial-gradient(circle at top right, #11142A 0%, var(--bg-midnight) 80%);
+        }
+
+        /* Pure CSS Stars */
+        .stars {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background-image: 
+                radial-gradient(1px 1px at 10% 20%, white, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 30% 50%, rgba(255,255,255,0.8), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 80% 10%, white, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 60% 80%, rgba(255,255,255,0.6), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90% 90%, white, rgba(0,0,0,0));
+            background-size: 200px 200px;
+            opacity: 0.3;
+            animation: twinkle 10s infinite alternate linear;
+        }
+
+        .aurora {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+            z-index: -2;
+            animation: float 20s infinite alternate ease-in-out;
+        }
+
+        .aurora-1 { top: -20%; left: -10%; width: 60vw; height: 60vw; background: var(--accent-rose); }
+        .aurora-2 { bottom: -20%; right: -10%; width: 70vw; height: 70vw; background: var(--accent-gold); animation-delay: -5s; }
+
+        @keyframes float { 100% { transform: translate(5vw, 5vh) scale(1.1); } }
+        @keyframes twinkle { 0% { opacity: 0.2; } 100% { opacity: 0.5; } }
+
+        /* --- MUSIC WIDGET --- */
+        #music-widget {
+            position: fixed;
+            top: 30px; right: 30px;
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(8px);
+            padding: 10px 20px; border-radius: 50px;
+            border: 1px solid var(--card-border);
+            z-index: 1000; opacity: 0; pointer-events: none;
+            transition: opacity 1s ease;
+        }
+        
+        .eq-bars { display: flex; gap: 3px; height: 16px; align-items: flex-end; }
+        .eq-bars span { width: 2px; background: var(--accent-gold); animation: eq 0.8s ease-in-out infinite alternate; }
+        .eq-bars span:nth-child(2) { animation-delay: 0.2s; }
+        .eq-bars span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes eq { 0% { height: 4px; } 100% { height: 16px; } }
+
+        /* --- SPLASH SCREEN --- */
+        #splash-screen {
+            position: fixed; inset: 0;
+            background: var(--bg-midnight);
+            z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 20px;
+            transition: opacity 1.2s ease, visibility 1.2s;
+        }
+
+        #splash-screen h2 {
+            font-size: 2.8rem; font-style: italic; color: var(--text-main);
+            margin-bottom: 40px; text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .enter-btn {
+            background: transparent; color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+            padding: 15px 40px; font-size: 1rem; font-family: 'Montserrat', sans-serif;
+            letter-spacing: 3px; text-transform: uppercase; border-radius: 40px;
+            cursor: pointer; position: relative; overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .enter-btn:hover {
+            background: var(--accent-gold); color: var(--bg-midnight);
+            box-shadow: 0 0 30px rgba(223, 202, 151, 0.4);
+        }
+
+        /* --- HEADER --- */
+        header { text-align: center; padding: 20vh 20px 15vh; position: relative; }
+        header h1 { font-size: clamp(3.5rem, 8vw, 6rem); font-style: italic; margin-bottom: 20px; background: linear-gradient(to right, #fff, var(--accent-rose)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        header p { font-size: 1.2rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.8; font-weight: 300; }
+
+        /* --- CENTER GLOWING TIMELINE --- */
+        .timeline {
+            position: relative; max-width: 1200px; margin: 0 auto; padding: 50px 20px;
+        }
+
+        .timeline::before {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 1px; height: 100%; background: linear-gradient(to bottom, transparent, var(--accent-rose), transparent);
+            opacity: 0.3;
+        }
+
+        .timeline-card {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 12vh; position: relative; width: 100%;
+        }
+
+        .timeline-card.reveal .card-content { opacity: 1; transform: translateY(0); }
+
+        .timeline-card:nth-child(odd) { flex-direction: row-reverse; }
+        .timeline-card:nth-child(odd) .card-content { transform: translateX(50px) translateY(30px); }
+        .timeline-card:nth-child(even) .card-content { transform: translateX(-50px) translateY(30px); }
+
+        .timeline-card::after {
+            content: ''; position: absolute; left: 50%; top: 50%;
+            transform: translate(-50%, -50%); width: 12px; height: 12px;
+            background: var(--bg-midnight); border: 2px solid var(--accent-rose);
+            border-radius: 50%; box-shadow: 0 0 15px var(--accent-rose); z-index: 2;
+        }
+
+        .card-content {
+            width: 45%; background: var(--card-bg); backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border); border-radius: 20px;
+            padding: 40px; opacity: 0; transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: var(--glow-shadow);
+        }
+
+        .card-content h2 { font-size: 2.2rem; color: var(--accent-gold); margin-bottom: 15px; font-style: italic; }
+        .card-content p { font-size: 1rem; color: var(--text-muted); line-height: 1.7; font-weight: 300; margin-bottom: 25px; }
+        
+        .img-wrapper { border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+        .img-wrapper img { width: 100%; display: block; transition: transform 0.7s ease; }
+        .card-content:hover .img-wrapper img { transform: scale(1.05); }
+
+        /* --- THE ELEGANT LETTER --- */
+        .letter-section {
+            max-width: 800px; margin: 15vh auto; padding: 80px 60px;
+            background: linear-gradient(145deg, rgba(30, 32, 45, 0.6), rgba(15, 16, 25, 0.8));
+            border: 1px solid rgba(223, 202, 151, 0.15); border-radius: 8px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 0 50px rgba(0,0,0,0.5);
+            text-align: center; position: relative;
+            opacity: 0; transform: translateY(30px); transition: all 1s ease;
+        }
+
+        .letter-section.reveal { opacity: 1; transform: translateY(0); }
+
+        .letter-section::before {
+            content: '❤'; position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+            width: 40px; height: 40px; background: var(--accent-rose); color: var(--bg-midnight);
+            display: flex; align-items: center; justify-content: center; border-radius: 50%;
+            font-size: 1.2rem; box-shadow: 0 5px 15px rgba(232, 165, 178, 0.3);
+        }
+
+        .letter-section p { font-size: 1.1rem; line-height: 2.2; color: #E0E2EC; margin-bottom: 25px; font-weight: 300; }
+        .letter-section p:last-child { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; color: var(--accent-gold); margin-top: 50px; font-style: italic; }
+
+        /* --- HOVER-FOCUS GALLERY --- */
+        .gallery-title { 
+            text-align: center; font-size: 3.5rem; font-style: italic; 
+            margin: 15vh 0 8vh; color: var(--text-main); 
+            opacity: 0; transition: opacity 1s ease;
+        }
+        .gallery-title.reveal { opacity: 1; }
+        
+        .gallery {
+            columns: 3 250px; gap: 20px; max-width: 1200px; margin: 0 auto; padding: 0 20px 15vh;
+        }
+
+        .gallery:hover .gallery-item { opacity: 0.3; filter: grayscale(50%); }
+
+        .gallery-item {
+            break-inside: avoid; margin-bottom: 20px;
+            border-radius: 8px; overflow: hidden; position: relative;
+            opacity: 0; transform: translateY(30px); transition: all 0.5s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .gallery-item.reveal { opacity: 1; transform: translateY(0); }
+
+        .gallery-item:hover {
+            opacity: 1 !important; filter: grayscale(0%) !important;
+            transform: scale(1.02) translateY(-5px); z-index: 10;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 20px rgba(223, 202, 151, 0.2);
+        }
+
+        .gallery-item img { width: 100%; display: block; }
+
+        /* --- FINALE --- */
+        .finale { 
+            text-align: center; padding: 15vh 20px 20vh; 
+            opacity: 0; transition: opacity 1s ease;
+        }
+        .finale.reveal { opacity: 1; }
+        .finale h2 { font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.5; font-style: italic; max-width: 900px; margin: 0 auto; color: var(--accent-rose); }
+
+        /* --- NAVIGATION BUTTON (Back to Page 1) --- */
+        .nav-btn {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 15px 40px;
+            background: transparent;
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-gold);
+            color: var(--bg-midnight);
+            box-shadow: 0 0 20px rgba(223, 202, 151, 0.3);
+        }
+
+        /* --- MAGIC CURSOR --- */
+        .cursor-sparkle {
+            position: fixed; pointer-events: none; z-index: 9999;
+            width: 4px; height: 4px; background: white; border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-rose);
+            animation: sparkle-fade 1s forwards;
+        }
+        @keyframes sparkle-fade { 100% { opacity: 0; transform: translateY(20px) scale(0); } }
+
+        /* --- RESPONSIVE MOBILE --- */
+        @media (max-width: 900px) {
+            .timeline::before { left: 20px; }
+            .timeline-card { flex-direction: column !important; align-items: flex-end; margin-bottom: 8vh; }
+            .timeline-card::after { left: 20px; }
+            .card-content { width: calc(100% - 60px); transform: translateY(30px) !important; padding: 30px 20px; }
+            .letter-section { margin: 10vh 20px; padding: 50px 30px; }
+            .gallery { columns: 2 150px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg"></div>
+    <div class="stars"></div>
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+
+    <div id="music-widget">
+        <div class="eq-bars"><span></span><span></span><span></span></div>
+        <span style="font-size: 0.85rem; letter-spacing: 1px; color: var(--text-muted); font-family: 'Montserrat', sans-serif;">Pia's Song</span>
+    </div>
+
+    <audio id="bg-music" loop>
+        <source src="song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="splash-screen">
+        <h2>Para ti, Pia.</h2>
+        <button class="enter-btn" id="enter-btn">Abrir Regalo</button>
+    </div>
+
+    <header>
+        <h1 class="reveal-item">¡Feliz primer mes!</h1>
+        <p class="reveal-item">Espero con ilusión nuestro futuro. Esto es solo una pequeña muestra de amor de mi parte.</p>
+    </header>
+
+    <section class="timeline">
+        <div class="timeline-card reveal-item">
+            <div class="card-content">
+                <h2>momentos divertidos</h2>
+                <p>¿Te acuerdas? Te enojabas cada vez que decía la palabra "lo que sea".</p>
+                <div class="img-wrapper"><img src="anger.png" loading="lazy" alt="Momentos"></div>
+            </div>
+        </div>
+
+        <div class="timeline-card reveal-item">
+            <div class="card-content">
+                <h2>luego mas enojo</h2>
+                <p>Solías enojarte cada vez que me hacía el tonto :)</p>
+                <div class="img-wrapper"><img src="even.png" loading="lazy" alt="Mas enojo"></div>
+            </div>
+        </div>
+
+        <div class="timeline-card reveal-item">
+            <div class="card-content">
+                <h2>acercándose</h2>
+                <p>y luego compartiendo secretos juntos, aunque eras principalmente tú.</p>
+                <div class="img-wrapper"><img src="secret.png" loading="lazy" alt="Secretos"></div>
+            </div>
+        </div>
+
+        <div class="timeline-card reveal-item">
+            <div class="card-content">
+                <h2>compartir ranking</h2>
+                <p>Recuerdo que quería permanecer uno al lado del otro en esta clasificación.</p>
+                <div class="img-wrapper"><img src="then.png" loading="lazy" alt="Ranking"></div>
+            </div>
+        </div>
+
+        <div class="timeline-card reveal-item">
+            <div class="card-content">
+                <h2>entonces empezó</h2>
+                <p>Nos acercamos y nos aceptamos mutuamente.</p>
+                <div class="img-wrapper"><img src="background.png" loading="lazy" alt="Aceptacion"></div>
+            </div>
+        </div>
+
+        <div class="timeline-card reveal-item">
+            <div class="card-content">
+                <h2>Te amo mucho</h2>
+                <p>empezamos a unir fotos</p>
+                <div class="img-wrapper"><img src="num1.png" loading="lazy" alt="Unir fotos"></div>
+            </div>
+        </div>
+
+        <div class="timeline-card reveal-item">
+            <div class="card-content">
+                <h2>Te amo muchísimo</h2>
+                <p>y luego aún más fotos</p>
+                <div class="img-wrapper"><img src="num2.png" loading="lazy" alt="Mas fotos"></div>
+            </div>
+        </div>
+
+        <div class="timeline-card reveal-item">
+            <div class="card-content">
+                <h2>nuestra historia de amor</h2>
+                <p>Un regalo lleno de amor de mi hermano Grinszwerg.</p>
+                <div class="img-wrapper"><img src="book.png" loading="lazy" alt="Historia"></div>
+            </div>
+        </div>
+    </section>
+
+    <div class="letter-section reveal-item">
+        <p>Sé que tendremos nuestros altibajos, pero seguiremos adelante. Hay una distancia entre nosotros, pero eso nos unirá aún más.</p>
+        <p>Este podría ser el comienzo de una eternidad, y eso me hace desearlo más que nada en el mundo.</p>
+        <p>Te daré todo de mí y haré todo lo posible por ti. Y solo quiero tu amor a cambio.</p>
+        <p>Y luego están los planes que hicimos para el futuro ;)<br>desplázate hacia abajo para verlos.</p>
+        <p>Te amo, siempre.</p>
+    </div>
+
+    <h2 class="gallery-title serif reveal-item">Nuestros Recuerdos</h2>
+    
+    <section class="gallery" id="dynamic-gallery-2">
+        </section>
+
+    <div class="finale reveal-item">
+        <h2 class="serif">Te amo, mi pequeña señorita.<br><br>Por siempre y para siempre te amaré hasta que muera, e incluso después de morir.</h2>
+        <a href="index.html" class="nav-btn">Volver a la primera página</a>
+    </div>
+
+    <script type="module">
+        // --- 1. FIREBASE SETUP & IMPORTS ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // IMPORTANT: Paste your exact configuration here!
+        const firebaseConfig = {
+            apiKey: "AIzaSyAJ00HQmAPHqSR0bE3ffc1b51ekP-qUS6U",
+            authDomain: "pia-gallery.firebaseapp.com",
+            projectId: "pia-gallery",
+            storageBucket: "pia-gallery.firebasestorage.app",
+            messagingSenderId: "668426441929",
+            appId: "1:668426441929:web:417f00314ad4c74816a918"
+          };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // --- 2. AUDIO & SPLASH SCREEN LOGIC ---
+        const enterBtn = document.getElementById('enter-btn');
+        const splashScreen = document.getElementById('splash-screen');
+        const bgMusic = document.getElementById('bg-music');
+        const musicWidget = document.getElementById('music-widget');
+
+        enterBtn.addEventListener('click', () => {
+            let playPromise = bgMusic.play();
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    musicWidget.style.opacity = '1';
+                }).catch(error => {
+                    console.log("Audio play failed: ", error);
+                });
+            }
+            splashScreen.style.opacity = '0';
+            setTimeout(() => { splashScreen.style.display = 'none'; }, 1200);
+        });
+
+        // --- 3. SCROLL ANIMATION OBSERVER ---
+        const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -50px 0px' };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    if(entry.target.classList.contains('gallery-item')) {
+                        setTimeout(() => { entry.target.classList.add('reveal'); }, (index % 3) * 150);
+                    } else {
+                        entry.target.classList.add('reveal');
+                    }
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Observe the static elements immediately
+        document.querySelectorAll('.timeline-card, .letter-section, .reveal-item').forEach(el => observer.observe(el));
+
+        // --- 4. FIREBASE GALLERY INJECTION (Specifically for Page 2) ---
+        async function loadGalleryTwo() {
+            const galleryContainer = document.getElementById('dynamic-gallery-2');
+            try {
+                // NOTICE: We are querying "page2_images" instead of "images"
+                const q = query(collection(db, "page2_images"), orderBy("createdAt", "asc"));
+                const querySnapshot = await getDocs(q);
+                
+                querySnapshot.forEach((doc) => {
+                    const imageUrl = doc.data().url; 
+                    
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'gallery-item'; // Using the specific class for your new layout
+                    
+                    itemDiv.innerHTML = `
+                        <img src="${imageUrl}" loading="lazy" alt="Memory">
+                    `;
+                    
+                    galleryContainer.appendChild(itemDiv);
+                    
+                    // Tell the scroll observer to watch this new dynamically added photo
+                    observer.observe(itemDiv);
+                });
+            } catch (error) {
+                console.error("Error loading Firebase images for Page 2:", error);
+            }
+        }
+        
+        loadGalleryTwo();
+
+        // --- 5. MAGICAL SPARKLE CURSOR ---
+        if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+            let lastSparkleTime = 0;
+            document.addEventListener('mousemove', (e) => {
+                const now = Date.now();
+                if (now - lastSparkleTime > 50) {
+                    lastSparkleTime = now;
+                    const sparkle = document.createElement('div');
+                    sparkle.classList.add('cursor-sparkle');
+                    sparkle.style.left = e.clientX + 'px';
+                    sparkle.style.top = e.clientY + 'px';
+                    document.body.appendChild(sparkle);
+                    
+                    setTimeout(() => { sparkle.remove(); }, 1000);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
